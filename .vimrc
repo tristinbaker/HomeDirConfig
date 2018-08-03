@@ -1,18 +1,3 @@
-set viminfo='10,\"100,:20,%,n~/.viminfo
-
-function! ResCur()
-  if line("'\"") <= line("$")
-    normal! g`"
-    return 1
-  endif
-endfunction
-
-augroup resCur
-  autocmd!
-  autocmd BufWinEnter * call ResCur()
-augroup END
-
-
 source /apollo/env/envImprovement/var/vimrc
 
 "----------------------------------"
@@ -68,6 +53,21 @@ set shiftwidth=4
 
 " Have bar show up at 80 characters
 " set colorcolumn=80
+
+" Have Vim remember last location of last 10 files opened
+set viminfo='10,\"100,:20,%,n~/.viminfo
+
+function! ResCur()
+  if line("'\"") <= line("$")
+    normal! g`"
+    return 1
+  endif
+endfunction
+
+augroup resCur
+  autocmd!
+  autocmd BufWinEnter * call ResCur()
+augroup END
 
 "----------------------------------"
 "                                  "   
