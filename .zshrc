@@ -50,10 +50,15 @@ alias cl='cd && cd Workspaces/CHACES_LabWebsite/src/CHACES_LabWebsite/rails-root
 alias bt='cd && cd BaketrisHomeDir/src/BaketrisHomeDir/'
 alias ag='cd && cd Workspaces/AvantGuards/src/AvantGuardsWebsite/rails-root/'
 alias routes='vi ./config/routes.rb'
-alias sz='source .zshrc'
+alias sz='cd && source .zshrc && cd -'
 alias st='tmux source-file ~/.tmux.conf'
 alias create_workspace='zsh ~/BaketrisHomeDir/src/BaketrisHomeDir/scripts/create_workspace.sh'
 alias clock_in='zsh BaketrisHomeDir/src/BaketrisHomeDir/scripts/countdown.zsh -d'
+alias gits='git status'
+alias gita='git add .'
+alias controllers='vim app/controllers/'
+alias models='vim app/models/'
+alias views='vim app/views/'
 
 # Fun stuff
 alias lyrics='zsh ~/BaketrisHomeDir/src/BaketrisHomeDir/scripts/lyrics.sh'
@@ -66,10 +71,19 @@ alias minesweeper='zsh ~/BaketrisHomeDir/src/BaketrisHomeDir/scripts/minesweeper
 alias periodic='zsh ~/BaketrisHomeDir/src/BaketrisHomeDir/scripts/periodic_table.sh'
 alias zalgo='ruby ~/BaketrisHomeDir/src/BaketrisHomeDir/scripts/zalgo.rb'
 
+more_hours() {
+    while true
+    do
+        printf "\033c"
+        hours
+        sleep 180
+    done
+}
+
 alt_caps_post() {
-   message="{\"message\": `jq -R -s -a 'tostring'`}"
-   curl -s "https://nuf5mb9kog.execute-api.us-east-1.amazonaws.com/beta/every-other-letter" -X POST -d $message | jq -r 'tostring' | rev | cut -c 1- | rev | cut_trailing_newline
- }
+    message="{\"message\": `jq -R -s -a 'tostring'`}"
+    curl -s "https://nuf5mb9kog.execute-api.us-east-1.amazonaws.com/beta/every-other-letter" -X POST -d $message | jq -r 'tostring' | rev | cut -c 1- | rev | cut_trailing_newline
+}
 
 test_post() {
     content="{\"Content\": `jq -R -s -a 'tostring'`}"
@@ -105,8 +119,8 @@ wednesday_test_post() {
 }
 
 papi_lookup() {
-   user_id=${1-$USERNAME}
-   kcurl -sX GET --header "Accept: application/json" "https://papi.integ.amazon.com/employee/login:$user_id?expand=all" | jq
+    user_id=${1-$USERNAME}
+    kcurl -sX GET --header "Accept: application/json" "https://papi.integ.amazon.com/employee/login:$user_id?expand=all" | jq
 }
 
 random_employee() {
@@ -125,52 +139,56 @@ cheat() {
 
 hours() {
     day=$(date +"%u")
+    case "$day" in
+        1) 
+            time_to_hit=32
+            ;;
+        2)
+            time_to_hit=24
+            ;;
+        3)
+            time_to_hit=16
+            ;;
+        4)
+            time_to_hit=8
+            ;;
+        5)
+            time_to_hit=0
+            ;;
+    esac
     kinit_if_needed
     name=${1-$USERNAME}
     read -r today this_week <<< $(kcurl -m 2 -s -L https://chaces-lab.corp.amazon.com/tools/time/$name.json | jq -r '[.today,.this_week] | @tsv');
-    left_today=`echo "scale=2; $((8.00-$today))" | bc -l`
-	left_today_rounded=`printf "%.2f" $left_today`
     left_week=`echo "sclae=2; $((40.00-$this_week))" | bc -l`
-	left_week_rounded=`printf "%.2f" $left_week`
+    left_week_rounded=`printf "%.2f" $left_week`
     echo "Hello $name, you have worked \e[92m$today \033[0mhours today and \e[92m$this_week \033[0mhours this week."
+    left_today=`echo "scale=2; $(($left_week_rounded-$time_to_hit))" | bc -l`
+    left_today_rounded=`printf "%.2f" $left_today`
     if [[ "$left_today_rounded" < 0 ]]
     then
-        case "$day" in
-            1) 
-                time_left=32
-                ;;
-            2)
-                time_left=24
-                ;;
-            3)
-                time_left=16
-                ;;
-            4)
-                time_left=8
-                ;;
-            5)
-                time_left=0
-                ;;
-        esac
-        overtime_week=`echo "scale=2; $(($time_left - $left_week))" |bc -l`
-	    overtime_week_rounded=`printf "%.2f" $overtime_week`
-        echo "You have worked \e[96m$overtime_week_rounded \033[0mhours of overtime this week. You only have \e[96m$left_week_rounded \033[0mmore hours to work." 
+        overtime_week=`echo "scale=2; $(($time_to_hit - $left_week))" |bc -l`
+        overtime_week_rounded=`printf "%.2f" $overtime_week`
+        if [[ "$overtime_rounded" < 0 ]]
+        then
+            echo "You have worked \e[96m$overtime_week_rounded \033[0mhours of overtime this week."
+        else
+            echo "You have worked \e[96m$overtime_week_rounded \033[0mhours of overtime this week. You only have \e[96m$left_week_rounded \033[0mmore hours to work." 
+        fi
     else
-	    echo "You will need to work \e[91m$left_today_rounded \033[0mmore hours today and \e[91m$left_week_rounded \033[0mmore hours this week."
+        echo "You will need to work \e[91m$left_today_rounded \033[0mmore hours today and \e[91m$left_week_rounded \033[0mmore hours this week."
     fi
 }
 
 chaces_hours() {
-     members=( $(/usr/bin/ldapsearch -x -H ldap://ldap.amazon.com:389 -b "ou=posix groups,ou=infrastructure,o=amazon.com" -s sub -a always -z 1000 "(&(cn=chaces))" "memberuid" | grep '^memberuid' | grep -o -E '\S+$' | paste -sd ' ') )
-     for member in "${members[@]}";
-     do 
-       if [ "$member" = "kumichae" ] || [ "$member" = "ditjason" ]
-       then
-          echo "  Fuck you $member. You have left us :(" 
-       else
-         hours $member
-         fi  
-     done
+    members=( $(/usr/bin/ldapsearch -x -H ldap://ldap.amazon.com:389 -b "ou=posix groups,ou=infrastructure,o=amazon.com" -s sub -a always -z 1000 "(&(cn=chaces))" "memberuid" | grep '^memberuid' | grep -o -E '\S+$' | paste -sd ' ') )
+    for member in "${members[@]}";
+    do 
+        if [ "$member" = "kumichae" ] || [ "$member" = "ditjason" ] || [ "$member" = "nicmi" ] || [ "$member" = "chaces" ]
+        then
+        else
+            hours $member
+        fi  
+    done
 }
 
 kinit_if_needed() {
@@ -221,3 +239,4 @@ if [ -f ~/.zshrc-dev-dsk-post ]; then
 fi
 
 export PATH=$BRAZIL_CLI_BIN:$PATH
+export PATH=/apollo/env/BarkCLI/bin:$PATH
