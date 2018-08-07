@@ -1,5 +1,3 @@
-source /apollo/env/envImprovement/var/vimrc
-
 "----------------------------------"
 "                                  "   
 "           UI Upgrades            "   
