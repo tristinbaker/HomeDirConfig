@@ -69,6 +69,74 @@ augroup END
 
 "----------------------------------"
 "                                  "   
+"            Functions             "
+"                                  "
+"----------------------------------"
+
+function Create()
+  let s:line=line(".")
+  let input = input('Function (f)/Controller (c)/Model (m)?: ')
+  if input == 'f' || input == 'function' || input == 'F' || input == 'Function'
+    let name = input('Function name: ')
+    let func_name = "def " . name
+    call append(s:line, func_name)
+    call append(s:line+1,"")
+    call append(s:line+2,"end")
+  elseif input == 'c' || input == 'controller' || input == 'C' || input == 'Controller'
+    let name = input('Controller name: ')
+    let func_name = "class " . name . "Controller < ApplicationController"
+    let crud = input('Would you like resourceful methods? (y/n): ')
+    if crud == 'y' || crud == 'Y' || crud == 'yes' || crud == 'Yes'
+      call append(s:line, func_name)
+      call append(s:line+1,"")
+      call append(s:line+2,"def index")
+      call append(s:line+3,"")
+      call append(s:line+4,"end")
+      call append(s:line+5,"")
+      call append(s:line+6,"def show")
+      call append(s:line+7,"")
+      call append(s:line+8,"end")
+      call append(s:line+9,"")
+      call append(s:line+10,"def new")
+      call append(s:line+11,"")
+      call append(s:line+12,"end")
+      call append(s:line+13,"")
+      call append(s:line+14,"def create")
+      call append(s:line+15,"")
+      call append(s:line+16,"end")
+      call append(s:line+17,"")
+      call append(s:line+18,"def edit")
+      call append(s:line+19,"")
+      call append(s:line+20,"end")
+      call append(s:line+21,"")
+      call append(s:line+22,"def update")
+      call append(s:line+23,"")
+      call append(s:line+24,"end")
+      call append(s:line+25,"")
+      call append(s:line+26,"def destroy")
+      call append(s:line+27,"")
+      call append(s:line+28,"end")
+      call append(s:line+29,"")
+    endif
+    call append(s:line+30,"private")
+    call append(s:line+31,"")
+    call append(s:line+32,"end")
+  elseif input == 'm' || input == 'model' || input == 'M' || input == 'Model'
+    let name = input('Model name: ')
+    let func_name = "class " . name . " < ApplicationRecord"
+    call append(s:line, func_name)
+    call append(s:line+1,"")
+    call append(s:line+2,"end")
+  else
+    echom "nope"
+  endif
+  unlet s:line
+  call feedkeys("gg=G``")
+  call feedkeys("dd")
+endfunction
+
+"----------------------------------"
+"                                  "   
 "         Key Remapping            "   
 "                                  "
 "----------------------------------"
