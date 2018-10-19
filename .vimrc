@@ -1,3 +1,5 @@
+source /apollo/env/envImprovement/var/vimrc
+
 "----------------------------------"
 "                                  "   
 "           UI Upgrades            "   
@@ -39,12 +41,18 @@ set splitright
 set splitbelow
 
 filetype plugin indent on
+"
+" When indenting with '>', use 2 spaces width
+set shiftwidth=2
 
-" Makes tabs only 4 spaces rather than 8
-set tabstop=4
+" Make tabs be spaces
+set expandtab
 
-" When indenting with '>', use 4 spaces width
-set shiftwidth=4
+" Makes tabs only 2 spaces rather than 8
+set tabstop=2
+"
+" Makes tabs only 2 spaces rather than 8
+set softtabstop=2
 
 " Move to next line after 80 characters (HTML makes this hard to use)
 " set tw=80
@@ -89,38 +97,24 @@ function Create()
     if crud == 'y' || crud == 'Y' || crud == 'yes' || crud == 'Yes'
       call append(s:line, func_name)
       call append(s:line+1,"")
-      call append(s:line+2,"def index")
+      call append(s:line+2,"def index; end")
       call append(s:line+3,"")
-      call append(s:line+4,"end")
+      call append(s:line+4,"def show; end")
       call append(s:line+5,"")
-      call append(s:line+6,"def show")
+      call append(s:line+6,"def new; end")
       call append(s:line+7,"")
-      call append(s:line+8,"end")
+      call append(s:line+8,"def create; end")
       call append(s:line+9,"")
-      call append(s:line+10,"def new")
+      call append(s:line+10,"def edit; end")
       call append(s:line+11,"")
-      call append(s:line+12,"end")
+      call append(s:line+12,"def update; end")
       call append(s:line+13,"")
-      call append(s:line+14,"def create")
+      call append(s:line+14,"def destroy; end")
       call append(s:line+15,"")
-      call append(s:line+16,"end")
-      call append(s:line+17,"")
-      call append(s:line+18,"def edit")
-      call append(s:line+19,"")
-      call append(s:line+20,"end")
-      call append(s:line+21,"")
-      call append(s:line+22,"def update")
-      call append(s:line+23,"")
-      call append(s:line+24,"end")
-      call append(s:line+25,"")
-      call append(s:line+26,"def destroy")
-      call append(s:line+27,"")
-      call append(s:line+28,"end")
-      call append(s:line+29,"")
     endif
-    call append(s:line+30,"private")
-    call append(s:line+31,"")
-    call append(s:line+32,"end")
+    call append(s:line+16,"private")
+    call append(s:line+17,"")
+    call append(s:line+18,"end")
   elseif input == 'm' || input == 'model' || input == 'M' || input == 'Model'
     let name = input('Model name: ')
     let func_name = "class " . name . " < ApplicationRecord"
@@ -146,16 +140,16 @@ endfunction
 "---------------------------------"
 
 " Automatically puts #include when #in is typed
-inoremap #in #include 
+autocmd FileType cpp inoremap #in #include 
 
 " Automatically puts #ifndef when #if is typed
-inoremap #if #ifndef
+autocmd FileType cpp inoremap #if #ifndef
 
 " Automatically puts #define when #d is typed
-inoremap #d #define
+autocmd FileType cpp inoremap #d #define
 
 " Automatically puts #endif when #e is typed
-inoremap #e #endif
+autocmd FileType cpp inoremap #e #endif
 
 "---------------------------------"
 "       Ruby Specific Remaps      "
@@ -176,7 +170,6 @@ nnoremap norqp :g/require 'pry'\\|binding.pry\\|YEET/d<CR>
 
 " Remap jj to escape so escape is not needed
 inoremap jj <Esc>
-cnoremap jj <Esc>
 
 " Don't skip multi line lines
 nnoremap j gj
@@ -187,7 +180,7 @@ nnoremap tn :tabnext<CR>
 nnoremap tp :tabprev<CR>
 
 " Remaps :w and :wq to ww and qq
-noremap ww :w<CR>
+nnoremap ww :w<CR>
 nnoremap qq :wq<CR>
 
 " Remap pane splits
@@ -201,3 +194,6 @@ noremap <F7> gg=G``
 
 " Paste mode on F5
 set pastetoggle=<F5>
+
+" Remap F10 to function creator
+nnoremap <F10> :call Create()<CR>
